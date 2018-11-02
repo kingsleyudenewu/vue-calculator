@@ -1,5 +1,6 @@
 <template>
   <div class="calculator">
+    <div class="allvalues">{{ allvalues || '0' }}</div>
     <div class="display">{{ current || '0' }}</div>
     <div @click="clear" class="btn ">C</div>
     <div @click="sign" class="btn">+/-</div>
@@ -19,7 +20,7 @@
     <div @click="add" class="btn operator">+</div>
     <div @click="append(0)" class="btn zero">0</div>
     <div @click="dot" class="btn ">.</div>
-    <div class="btn ">=</div>
+    <div @click="equal" class="btn ">=</div>
   </div>
 </template>
 
@@ -27,8 +28,11 @@
 export default {
   data: () => {
     return {
+      previous: null,
       current: "",
-      operator: null
+      operator: null,
+      operatorClicked: false,
+      allvalues: ""
     };
   },
   methods: {
@@ -45,24 +49,48 @@ export default {
       this.current = `${parseFloat(this.current / 100)}`;
     },
     append(input) {
+      if (this.operatorClicked) {
+        this.current = "";
+        this.operatorClicked = false;
+      }
       this.current = `${this.current}${input}`;
+      this.allvalues = this.allvalues + this.current;
     },
     dot() {
       if (this.current.indexOf(".") === -1) {
         this.append(".");
       }
     },
+    setPrevious() {
+      this.previous = this.current;
+      this.operatorClicked = true;
+    },
     divide() {
-
+      this.operator = (a, b) => a / b;
+      this.setPrevious();
+      this.allvalues = this.allvalues + " / ";
     },
     multiply() {
-
+      this.operator = (a, b) => a * b;
+      this.setPrevious();
+      this.allvalues = this.allvalues + " * ";
     },
-    subtract(){
-
+    subtract() {
+      this.operator = (a, b) => b - a;
+      this.setPrevious();
+      this.allvalues = this.allvalues + " - ";
     },
     add() {
-
+      this.operator = (a, b) => a + b;
+      this.setPrevious();
+      this.allvalues = this.allvalues + " + ";
+    },
+    equal() {
+      this.current = `${this.operator(
+        parseFloat(this.current),
+        parseFloat(this.previous)
+      )}`;
+      this.previous = null;
     }
   }
 };
@@ -83,7 +111,15 @@ export default {
   background-color: #333333;
   color: white;
   font-weight: bold;
-  text-align: center;
+  /* text-align: center; */
+  padding: 8px;
+}
+.allvalues {
+  grid-column: 1 / 5;
+  background-color: #c3c2c2;
+  color: white;
+  font-weight: bold;
+  text-align: right;
   padding: 8px;
 }
 .zero {
