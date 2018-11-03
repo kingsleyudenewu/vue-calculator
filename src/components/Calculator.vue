@@ -32,12 +32,15 @@ export default {
       current: "",
       operator: null,
       operatorClicked: false,
-      allvalues: ""
+      allvalues: "",
+      equalbtn: false
     };
   },
   methods: {
     clear() {
       this.current = "";
+      this.allvalues = "";
+      this.previous = null;
     },
     sign() {
       this.current =
@@ -62,6 +65,7 @@ export default {
       }
     },
     setPrevious() {
+      this.equal();
       this.previous = this.current;
       this.operatorClicked = true;
     },
@@ -86,11 +90,16 @@ export default {
       this.allvalues = this.allvalues + " + ";
     },
     equal() {
-      this.current = `${this.operator(
-        parseFloat(this.current),
-        parseFloat(this.previous)
-      )}`;
+      if (this.previous) {
+        this.current = `${this.operator(
+          parseFloat(this.current),
+          parseFloat(this.previous)
+        )}`;
+      }
+      // this.answer = parseFloat(eval(this.allvalues));
+
       this.previous = null;
+      this.equalbtn = true;
     }
   }
 };
